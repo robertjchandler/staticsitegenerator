@@ -1,6 +1,7 @@
 import unittest
 
 from textnode import TextNode, TextType, text_node_to_html_node
+from split_delimiter import split_nodes_delimiter
 
 
 class TestTextNode(unittest.TestCase):
@@ -52,6 +53,22 @@ class TestTextNodeToHTMLNode(unittest.TestCase):
         html_node = text_node_to_html_node(node)
         self.assertEqual(html_node.tag, "b")
         self.assertEqual(html_node.value, "This is bold")
+
+class TestSplitDelimiter(unittest.TestCase):
+    def test_bold(self):
+        node = TextNode("This is text with a **bold** word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        self.assertEqual(new_nodes[1].text, "bold")
+
+    def test_italic(self):
+        node = TextNode("This is text with a *italic* word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "*", TextType.ITALIC)
+        self.assertEqual(new_nodes[1].text, "italic")
+
+    def test_code(self):
+        node = TextNode("This is text with a `code block` word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
+        self.assertEqual(new_nodes[1].text, "code block")
 
 if __name__ == "__main__":
     unittest.main()

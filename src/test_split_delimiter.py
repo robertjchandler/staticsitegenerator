@@ -6,6 +6,7 @@ from split_delimiter import (
     split_nodes_link,
     split_nodes_delimiter,
     text_to_textnodes,
+    markdown_to_blocks,
     extract_markdown_images,
     extract_markdown_links,
 )
@@ -117,3 +118,14 @@ def test_text_to_textnodes(self):
             nodes,
         )
         
+def test_markdown_to_blocks(self):
+     markdown = "# This is a heading\n\nThis is a paragraph of text. It has some **bold** and *italic* words inside of it.\n\n* This is the first list item in a list block\n* This is a list item\n* This is another list item"
+     blocks = markdown_to_blocks(markdown)
+     self.assertListEqual(
+          [
+               "# This is a heading",
+               "This is a paragraph of text. It has some **bold** and *italic* words inside of it.",
+               "* This is the first list item in a list block\n* This is a list item\n* This is another list item"
+          ],
+          blocks,
+     )

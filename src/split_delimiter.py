@@ -13,7 +13,7 @@ def markdown_to_blocks(markdown):
 def block_to_block_type(markdown):
     if(re.match(r"^#{1,6} ", markdown) is not None):
         return "heading"
-    elif(re.match(r"^`{3} [ a-zA-Z0-9]*`{3}$", markdown) is not None):
+    elif(re.match(r"^`{3}[\w\W\s]*`{3}$", markdown) is not None):
         return "code"
     elif(re.match(r"^>", markdown, re.MULTILINE) is not None):
         return "quote"

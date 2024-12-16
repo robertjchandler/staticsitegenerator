@@ -137,7 +137,7 @@ class TestBlockToBlockType(unittest.TestCase):
         self.assertEqual(block_to_block_type(markdown), "heading")
 
     def test_code(self):
-        markdown = "``` This is a c0de block ```"
+        markdown = "``` This\n\tis\n\ta.\n\t(c0de)\n\t# block ```"
         self.assertEqual(block_to_block_type(markdown), "code")
 
     def test_quote(self):

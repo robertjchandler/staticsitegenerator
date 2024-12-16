@@ -7,6 +7,7 @@ from split_delimiter import (
     split_nodes_delimiter,
     text_to_textnodes,
     markdown_to_blocks,
+    block_to_block_type,
     extract_markdown_images,
     extract_markdown_links,
 )
@@ -129,3 +130,29 @@ def test_markdown_to_blocks(self):
           ],
           blocks,
      )
+
+class TestBlockToBlockType(unittest.TestCase):
+    def test_heading(self):
+        markdown = "# This is a heading"
+        self.assertEqual(block_to_block_type(markdown), "heading")
+
+    def test_code(self):
+        markdown = "``` This is a c0de block ```"
+        self.assertEqual(block_to_block_type(markdown), "code")
+
+    def test_quote(self):
+        markdown = "> This\n> is\n> a\n> quote"
+        self.assertEqual(block_to_block_type(markdown), "quote")
+
+    def test_unordered_list(self):
+        markdown = "* This\n* is\n* an\n- unordered\n- list"
+        self.assertEqual(block_to_block_type(markdown), "unordered_list")
+
+    def test_ordered_list(self):
+        markdown = "1. This\n2. is\n3. an\n4. ordered\n5. list"
+        self.assertEqual(block_to_block_type(markdown), "ordered_list")
+        
+    def test_paragraph(self):
+        markdown = "This is a paragraph."
+        self.assertEqual(block_to_block_type(markdown), "paragraph")
+        

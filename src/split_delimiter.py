@@ -10,6 +10,20 @@ def markdown_to_blocks(markdown):
             blocks.append(block.rstrip().lstrip())
     return blocks
 
+def block_to_block_type(markdown):
+    if(re.match(r"^#{1,6} ", markdown) is not None):
+        return "heading"
+    elif(re.match(r"^`{3} [ a-zA-Z0-9]*`{3}$", markdown) is not None):
+        return "code"
+    elif(re.match(r"^>", markdown, re.MULTILINE) is not None):
+        return "quote"
+    elif(re.match(r"^[*|-] ", markdown, re.MULTILINE) is not None):
+        return "unordered_list"
+    elif(re.match(r"^\d\. ", markdown, re.MULTILINE) is not None):
+        return "ordered_list"
+    else:
+        return "paragraph"
+    
 def text_to_textnodes(text):
     nodes = [TextNode(text, TextType.TEXT)]
     nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)

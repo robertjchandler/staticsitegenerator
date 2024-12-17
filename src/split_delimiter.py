@@ -23,7 +23,25 @@ def block_to_block_type(markdown):
         return "ordered_list"
     else:
         return "paragraph"
-    
+
+def markdown_to_html_node(markdown):
+    blocks = markdown_to_blocks(markdown)
+    for block in blocks:
+        block_type = block_to_block_type(block)
+        if block_type == "heading":
+            pass
+        elif block_type == "code":
+            pass
+        elif block_type == "quote":
+            pass
+        elif block_type == "unordered_list":
+            pass
+        elif block_type == "ordered_list":
+            pass
+        else:
+            # block_type == "paragraph"
+            pass
+
 def text_to_textnodes(text):
     nodes = [TextNode(text, TextType.TEXT)]
     nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)

@@ -1,6 +1,6 @@
 import re
 from textnode import TextNode, TextType
-from htmlnode import HTMLNode, LeafNode, ParentNode
+from htmlnode import LeafNode, ParentNode
 
 def markdown_to_blocks(markdown):
     split_markdown = markdown.split("\n\n")
@@ -29,7 +29,7 @@ def markdown_to_html_node(markdown):
     for block in blocks:
         block_type = block_to_block_type(block)
         if block_type == "heading":
-            pass
+            return heading_helper(block)
         elif block_type == "code":
             pass
         elif block_type == "quote":
@@ -40,7 +40,28 @@ def markdown_to_html_node(markdown):
             pass
         else:
             # block_type == "paragraph"
-            pass
+            return paragraph_helper(block)
+
+def heading_helper(block):
+    split_block = block.split(" ", maxsplit=1)
+    heading_type = len(split_block[0])
+    tag = f"h{heading_type}"
+    return LeafNode(tag, split_block[1])
+
+def code_helper(block):
+    pass
+
+def quote_helper(block):
+    pass
+
+def unordered_list_helper(block):
+    pass
+
+def ordered_list_helper(block):
+    pass
+
+def paragraph_helper(block):
+    return LeafNode("p", block)
 
 def text_to_textnodes(text):
     nodes = [TextNode(text, TextType.TEXT)]

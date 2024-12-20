@@ -31,9 +31,9 @@ def markdown_to_html_node(markdown):
         if block_type == "heading":
             return heading_helper(block)
         elif block_type == "code":
-            pass
+            return code_helper(block)
         elif block_type == "quote":
-            pass
+            return quote_helper(block)
         elif block_type == "unordered_list":
             pass
         elif block_type == "ordered_list":
@@ -49,10 +49,12 @@ def heading_helper(block):
     return LeafNode(tag, split_block[1])
 
 def code_helper(block):
-    pass
+    code = block.lstrip("``` ").rstrip(" ```")
+    return LeafNode("code", str(LeafNode("pre", code)))
 
 def quote_helper(block):
-    pass
+    quote = block.split("> ")
+    return LeafNode("blockquote", quote)
 
 def unordered_list_helper(block):
     pass

@@ -26,21 +26,23 @@ def block_to_block_type(markdown):
 
 def markdown_to_html_node(markdown):
     blocks = markdown_to_blocks(markdown)
+    children = []
     for block in blocks:
         block_type = block_to_block_type(block)
         if block_type == "heading":
-            return heading_helper(block)
+            children.append(heading_helper(block))
         elif block_type == "code":
-            return code_helper(block)
+            children.append(code_helper(block))
         elif block_type == "quote":
-            return quote_helper(block)
+            children.append(quote_helper(block))
         elif block_type == "unordered_list":
-            pass
+            children.append(unordered_list_helper(block))
         elif block_type == "ordered_list":
-            pass
+            children.append(ordered_list_helper(block))
         else:
             # block_type == "paragraph"
-            return paragraph_helper(block)
+            children.append(paragraph_helper(block))
+    return ParentNode("html", str(ParentNode("body", children)))
 
 def heading_helper(block):
     split_block = block.split(" ", maxsplit=1)
@@ -49,7 +51,7 @@ def heading_helper(block):
     return LeafNode(tag, split_block[1])
 
 def code_helper(block):
-    code = block.lstrip("``` ").rstrip(" ```")
+    code = block.lstrip("```").rstrip("```")
     return LeafNode("code", str(LeafNode("pre", code)))
 
 def quote_helper(block):
@@ -57,10 +59,18 @@ def quote_helper(block):
     return LeafNode("blockquote", quote)
 
 def unordered_list_helper(block):
-    pass
+    list_items = []
+    split_block = block.split("> ")
+    for item in split_block:
+        list_items.append(LeafNode("li", item))
+    return ParentNode("ul", list_items)
 
 def ordered_list_helper(block):
-    pass
+    list_items = []
+    split_block = block.split("\n")
+    for item in split_block:
+        list_items.append(LeafNode("li", item.partition(". ")[2]))
+    return ParentNode("ol", list_items)
 
 def paragraph_helper(block):
     return LeafNode("p", block)

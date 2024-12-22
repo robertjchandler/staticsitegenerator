@@ -1,6 +1,7 @@
 import unittest
 
 from textnode import TextNode, TextType
+from htmlnode import LeafNode, ParentNode
 from split_delimiter import (
     split_nodes_image,
     split_nodes_link,
@@ -8,6 +9,12 @@ from split_delimiter import (
     text_to_textnodes,
     markdown_to_blocks,
     block_to_block_type,
+    heading_helper,
+    code_helper,
+    quote_helper,
+    unordered_list_helper,
+    ordered_list_helper,
+    paragraph_helper,
     extract_markdown_images,
     extract_markdown_links,
 )
@@ -156,3 +163,26 @@ class TestBlockToBlockType(unittest.TestCase):
         markdown = "This is a paragraph."
         self.assertEqual(block_to_block_type(markdown), "paragraph")
         
+def test_heading_helper(self):
+    block = "# This a a heading"
+    self.assertEqual(heading_helper(block), LeafNode("h1", "This is a heading"))
+
+def test_code_helper(self):
+    block = "``` This\n\tis\n\ta.\n\t(c0de)\n\t# block ```"
+    self.assertEqual(code_helper(block), LeafNode("code", str(LeafNode("pre", "This\n\tis\n\ta.\n\t(c0de)\n\t# block"))))
+
+def test_quote_helper(self):
+    block = "> This is a quote"
+    self.assertEqual(quote_helper(block), LeafNode("blockquote", "This is a quote"))
+
+def test_unordered_list_helper(self):
+    block = "* This is an unordered list"
+    self.assertEqual(unordered_list_helper(block), ParentNode("ul", [LeafNode("li", "This is an unordered list")]))
+
+def test_ordered_list_helper(self):
+    block = "1. This is an ordered list"
+    self.assertEqual(ordered_list_helper(block), ParentNode("ol", [LeafNode("li", "This is an ordered list")]))
+
+def test_paragraph_helper(self):
+    block = "This is a paragraph."
+    self.assertEqual(paragraph_helper(block), LeafNode("p", block))

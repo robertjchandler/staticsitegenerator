@@ -163,26 +163,27 @@ class TestBlockToBlockType(unittest.TestCase):
         markdown = "This is a paragraph."
         self.assertEqual(block_to_block_type(markdown), "paragraph")
         
-def test_heading_helper(self):
-    block = "# This a a heading"
-    self.assertEqual(heading_helper(block), LeafNode("h1", "This is a heading"))
+class TestMarkdownToHTMLNode(unittest.TestCase):
+    def test_heading_helper(self):
+        block = "# This is a heading"
+        self.assertEqual(heading_helper(block), LeafNode("h1", "This is a heading"))
 
-def test_code_helper(self):
-    block = "``` This\n\tis\n\ta.\n\t(c0de)\n\t# block ```"
-    self.assertEqual(code_helper(block), LeafNode("code", str(LeafNode("pre", "This\n\tis\n\ta.\n\t(c0de)\n\t# block"))))
+    def test_code_helper(self):
+        block = "```This is a code block```"
+        self.assertEqual(code_helper(block), LeafNode("pre", str(LeafNode("code", "This is a code block"))))
 
-def test_quote_helper(self):
-    block = "> This is a quote"
-    self.assertEqual(quote_helper(block), LeafNode("blockquote", "This is a quote"))
+    def test_quote_helper(self):
+        block = "> This is a quote"
+        self.assertEqual(quote_helper(block), LeafNode("blockquote", "This is a quote"))
 
-def test_unordered_list_helper(self):
-    block = "* This is an unordered list"
-    self.assertEqual(unordered_list_helper(block), ParentNode("ul", [LeafNode("li", "This is an unordered list")]))
+    def test_unordered_list_helper(self):
+        block = "* This is an unordered list"
+        self.assertEqual(unordered_list_helper(block), ParentNode("ul", [LeafNode("li", "This is an unordered list")]))
 
-def test_ordered_list_helper(self):
-    block = "1. This is an ordered list"
-    self.assertEqual(ordered_list_helper(block), ParentNode("ol", [LeafNode("li", "This is an ordered list")]))
+    def test_ordered_list_helper(self):
+        block = "1. This is an ordered list"
+        self.assertEqual(ordered_list_helper(block), ParentNode("ol", [LeafNode("li", "This is an ordered list")]))
 
-def test_paragraph_helper(self):
-    block = "This is a paragraph."
-    self.assertEqual(paragraph_helper(block), LeafNode("p", block))
+    def test_paragraph_helper(self):
+        block = "This is a paragraph."
+        self.assertEqual(paragraph_helper(block), LeafNode("p", block))

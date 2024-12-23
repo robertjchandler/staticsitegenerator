@@ -15,7 +15,7 @@ def block_to_block_type(markdown):
         return "heading"
     elif(re.match(r"^`{3}[\w\W\s]*`{3}$", markdown) is not None):
         return "code"
-    elif(re.match(r"^>", markdown, re.MULTILINE) is not None):
+    elif(re.match(r"^> ", markdown, re.MULTILINE) is not None):
         return "quote"
     elif(re.match(r"^[*|-] ", markdown, re.MULTILINE) is not None):
         return "unordered_list"
@@ -42,7 +42,7 @@ def markdown_to_html_node(markdown):
         else:
             # block_type == "paragraph"
             children.append(paragraph_helper(block))
-    return ParentNode("html", str(ParentNode("body", children)))
+    return ParentNode("html", ParentNode("body", children))
 
 def heading_helper(block):
     split_block = block.split(" ", maxsplit=1)
@@ -52,17 +52,23 @@ def heading_helper(block):
 
 def code_helper(block):
     code = block.lstrip("```").rstrip("```")
-    return LeafNode("code", str(LeafNode("pre", code)))
+    return LeafNode("pre", LeafNode("code", code))
 
 def quote_helper(block):
-    quote = block.split("> ")
-    return LeafNode("blockquote", quote)
+    quote = ""
+    split_block = block.split("\n")
+    for line in split_block:
+        quote += line.split("> ")[1] + "\n"
+    return LeafNode("blockquote", quote.rstrip("\n"))
 
 def unordered_list_helper(block):
     list_items = []
-    split_block = block.split("> ")
+    split_block = block.split("\n")
     for item in split_block:
-        list_items.append(LeafNode("li", item))
+        if(re.match(r"^[*] ", item) is not None):
+            list_items.append(LeafNode("li", item.split("* ")[1]))
+        else:
+            list_items.append(LeafNode("li", item.split("- ")[1]))
     return ParentNode("ul", list_items)
 
 def ordered_list_helper(block):

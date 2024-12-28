@@ -1,6 +1,13 @@
 import re
-from textnode import TextNode, TextType
-from htmlnode import LeafNode, ParentNode
+from textnode import TextNode, TextType, text_node_to_html_node
+from htmlnode import ParentNode
+
+block_type_paragraph = "paragraph"
+block_type_heading = "heading"
+block_type_code = "code"
+block_type_quote = "quote"
+block_type_olist = "ordered_list"
+block_type_ulist = "unordered_list"
 
 def markdown_to_blocks(markdown):
     split_markdown = markdown.split("\n\n")
@@ -25,61 +32,84 @@ def block_to_block_type(markdown):
         return "paragraph"
 
 def markdown_to_html_node(markdown):
-    blocks = markdown_to_blocks(markdown)
+    block_type = block_to_block_type(markdown)
+    if block_type == block_type_paragraph:
+        return paragraph_helper(markdown)
+    if block_type == block_type_heading:
+        return heading_helper(markdown)
+    if block_type == block_type_code:
+        return code_helper(markdown)
+    if block_type == block_type_olist:
+        return ordered_list_helper(markdown)
+    if block_type == block_type_ulist:
+        return unordered_list_helper(markdown)
+    if block_type == block_type_quote:
+        return quote_helper(markdown)
+    raise ValueError("Invalid block type")
+
+def text_to_children(text):
+    text_nodes = text_to_textnodes(text)
     children = []
-    for block in blocks:
-        block_type = block_to_block_type(block)
-        if block_type == "heading":
-            children.append(heading_helper(block))
-        elif block_type == "code":
-            children.append(code_helper(block))
-        elif block_type == "quote":
-            children.append(quote_helper(block))
-        elif block_type == "unordered_list":
-            children.append(unordered_list_helper(block))
-        elif block_type == "ordered_list":
-            children.append(ordered_list_helper(block))
-        else:
-            # block_type == "paragraph"
-            children.append(paragraph_helper(block))
-    return ParentNode("html", ParentNode("body", children))
+    for text_node in text_nodes:
+        html_node = text_node_to_html_node(text_node)
+        children.append(html_node)
+    return children
 
 def heading_helper(block):
-    split_block = block.split(" ", maxsplit=1)
-    heading_type = len(split_block[0])
-    tag = f"h{heading_type}"
-    return LeafNode(tag, split_block[1])
+    level = 0
+    for char in block:
+        if char == "#":
+            level += 1
+        else:
+            break
+    if level + 1 >= len(block):
+        raise ValueError(f"Invalid heading level: {level}")
+    text = block[level + 1 :]
+    children = text_to_children(text)
+    return ParentNode(f"h{level}", children)
 
 def code_helper(block):
-    code = block.lstrip("```").rstrip("```")
-    return LeafNode("pre", LeafNode("code", code))
+    if not block.startswith("```") or not block.endswith("```"):
+        raise ValueError("Invalid code block")
+    text = block[4:-3]
+    children = text_to_children(text)
+    code = ParentNode("code", children)
+    return ParentNode("pre", [code])
 
 def quote_helper(block):
-    quote = ""
-    split_block = block.split("\n")
-    for line in split_block:
-        quote += line.split("> ")[1] + "\n"
-    return LeafNode("blockquote", quote.rstrip("\n"))
+    lines = block.split("\n")
+    new_lines = []
+    for line in lines:
+        if not line.startswith(">"):
+            raise ValueError("Invalid quote block")
+        new_lines.append(line.lstrip(">").strip())
+    content = " ".join(new_lines)
+    children = text_to_children(content)
+    return ParentNode("blockquote", children)
 
 def unordered_list_helper(block):
     list_items = []
     split_block = block.split("\n")
     for item in split_block:
-        if(re.match(r"^[*] ", item) is not None):
-            list_items.append(LeafNode("li", item.split("* ")[1]))
-        else:
-            list_items.append(LeafNode("li", item.split("- ")[1]))
+        text = item[2:]
+        children = text_to_children(text)
+        list_items.append(ParentNode("li", children))
     return ParentNode("ul", list_items)
 
 def ordered_list_helper(block):
     list_items = []
     split_block = block.split("\n")
     for item in split_block:
-        list_items.append(LeafNode("li", item.partition(". ")[2]))
+        text = item[3:]
+        children = text_to_children(text)
+        list_items.append(ParentNode("li", children))
     return ParentNode("ol", list_items)
 
 def paragraph_helper(block):
-    return LeafNode("p", block)
+    lines = block.split("\n")
+    paragraph = " ".join(lines)
+    children = text_to_children(paragraph)
+    return ParentNode("p", children)
 
 def text_to_textnodes(text):
     nodes = [TextNode(text, TextType.TEXT)]

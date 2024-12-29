@@ -14,38 +14,65 @@ def markdown_to_blocks(markdown):
     split_markdown = markdown.split("\n\n")
     blocks = []
     for block in split_markdown:
-        if block != "":
-            blocks.append(block.rstrip().lstrip())
+        if block == "":
+            continue
+        block = block.strip()
+        blocks.append(block)
     return blocks
 
-def block_to_block_type(markdown):
-    if(re.match(r"^#{1,6} ", markdown) is not None):
-        return "heading"
-    elif(re.match(r"^`{3}[\w\W\s]*`{3}$", markdown) is not None):
-        return "code"
-    elif(re.match(r"^> ", markdown, re.MULTILINE) is not None):
-        return "quote"
-    elif(re.match(r"^[*|-] ", markdown, re.MULTILINE) is not None):
-        return "unordered_list"
-    elif(re.match(r"^\d\. ", markdown, re.MULTILINE) is not None):
-        return "ordered_list"
-    else:
-        return "paragraph"
+def block_to_block_type(block):
+    lines = block.split("\n")
+
+    if block.startswith(("# ", "## ", "### ", "#### ", "##### ", "###### ")):
+        return block_type_heading
+    if len(lines) > 1 and lines[0].startswith("```") and lines[-1].startswith("```"):
+        return block_type_code
+    if block.startswith(">"):
+        for line in lines:
+            if not line.startswith(">"):
+                return block_type_paragraph
+        return block_type_quote
+    if block.startswith("* "):
+        for line in lines:
+            if not line.startswith("* "):
+                return block_type_paragraph
+        return block_type_ulist
+    if block.startswith("- "):
+        for line in lines:
+            if not line.startswith("- "):
+                return block_type_paragraph
+        return block_type_ulist
+    if block.startswith("1. "):
+        i = 1
+        for line in lines:
+            if not line.startswith(f"{i}. "):
+                return block_type_paragraph
+            i += 1
+        return block_type_olist
+    return block_type_paragraph
 
 def markdown_to_html_node(markdown):
-    block_type = block_to_block_type(markdown)
+    blocks = markdown_to_blocks(markdown)
+    children = []
+    for block in blocks:
+        html_node = block_to_html_node(block)
+        children.append(html_node)
+    return ParentNode("div", children, None)
+
+def block_to_html_node(block):
+    block_type = block_to_block_type(block)
     if block_type == block_type_paragraph:
-        return paragraph_helper(markdown)
+        return paragraph_helper(block)
     if block_type == block_type_heading:
-        return heading_helper(markdown)
+        return heading_helper(block)
     if block_type == block_type_code:
-        return code_helper(markdown)
+        return code_helper(block)
     if block_type == block_type_olist:
-        return ordered_list_helper(markdown)
+        return ordered_list_helper(block)
     if block_type == block_type_ulist:
-        return unordered_list_helper(markdown)
+        return unordered_list_helper(block)
     if block_type == block_type_quote:
-        return quote_helper(markdown)
+        return quote_helper(block)
     raise ValueError("Invalid block type")
 
 def text_to_children(text):

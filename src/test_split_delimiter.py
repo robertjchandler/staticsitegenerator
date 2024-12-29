@@ -1,15 +1,6 @@
 import unittest
 
 from textnode import TextNode, TextType
-from markdown_to_blocks import (
-    block_type_paragraph,
-    block_type_heading,
-    block_type_code,
-    block_type_olist,
-    block_type_ulist,
-    block_type_quote,
-)
-
 from split_delimiter import (
     split_nodes_image,
     split_nodes_link,

@@ -31,7 +31,7 @@ class TestBlockToBlockType(unittest.TestCase):
         self.assertEqual(block_to_block_type(markdown), "heading")
 
     def test_code(self):
-        markdown = "``` This\n\tis\n\ta.\n\t(c0de)\n\t# block ```"
+        markdown = "```\ncode\n```"
         self.assertEqual(block_to_block_type(markdown), "code")
 
     def test_quote(self):
@@ -39,7 +39,7 @@ class TestBlockToBlockType(unittest.TestCase):
         self.assertEqual(block_to_block_type(markdown), "quote")
 
     def test_unordered_list(self):
-        markdown = "* This\n* is\n* an\n- unordered\n- list"
+        markdown = "- This\n- is\n- an\n- unordered\n- list"
         self.assertEqual(block_to_block_type(markdown), "unordered_list")
 
     def test_ordered_list(self):

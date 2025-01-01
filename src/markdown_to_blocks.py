@@ -1,4 +1,3 @@
-import re
 from textnode import text_node_to_html_node
 from htmlnode import ParentNode
 from split_delimiter import text_to_textnodes

@@ -1,3 +1,4 @@
+import re
 import os
 import shutil
 
@@ -11,12 +12,22 @@ def main():
         # delete all the contents of the destination directory
         if os.path.exists(destination):
             shutil.rmtree(destination)
+        print(f"creating directory {destination}")
         os.mkdir(destination)
-        os.mkdir(destination + "/images")
         # copy all files and subdirectories
         contents = os.listdir(source)
         for file in contents:
-            shutil.copy(file, destination)
+            if file.endswith((".css", ".png")):
+                print(f"copying {file} from {source} to {destination}")
+                filepath = f"{source}/{file}"
+                shutil.copy(filepath, destination)
+            else:
+                directory = f"{destination}/{file}"
+                print(f"creating directory {directory}")
+                # os.mkdir(directory)
+                rec_source = f"{source}/{file}"
+                copy(rec_source, directory)
+                
 
     root = "/home/robert_chandler/workspace/staticsitegenerator/"
     source = root + "static"

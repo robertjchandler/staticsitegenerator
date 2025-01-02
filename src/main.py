@@ -1,4 +1,3 @@
-import re
 import os
 import shutil
 
@@ -14,20 +13,22 @@ def main():
             shutil.rmtree(destination)
         print(f"creating directory {destination}")
         os.mkdir(destination)
+        copy_helper(source, destination)
+                
+    def copy_helper(source, destination):
         # copy all files and subdirectories
         contents = os.listdir(source)
         for file in contents:
-            if file.endswith((".css", ".png")):
+            if "." in file:
                 print(f"copying {file} from {source} to {destination}")
                 filepath = f"{source}/{file}"
                 shutil.copy(filepath, destination)
             else:
                 directory = f"{destination}/{file}"
                 print(f"creating directory {directory}")
-                # os.mkdir(directory)
+                os.mkdir(directory)
                 rec_source = f"{source}/{file}"
-                copy(rec_source, directory)
-                
+                copy_helper(rec_source, directory)
 
     root = "/home/robert_chandler/workspace/staticsitegenerator/"
     source = root + "static"

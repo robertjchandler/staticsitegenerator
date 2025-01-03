@@ -35,5 +35,12 @@ def main():
     destination = root + "public"
     copy(source, destination)
 
+def extract_title(markdown):
+    markdown_lines = markdown.split("\n")
+    for line in markdown_lines:
+        if line.startswith("# "):
+            return line[2:].strip()
+    raise Exception("Missing title")
+
 main()
 

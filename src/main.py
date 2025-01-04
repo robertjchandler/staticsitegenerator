@@ -2,6 +2,7 @@ import os
 import shutil
 
 from textnode import TextNode, TextType
+from markdown_to_blocks import markdown_to_html_node
 
 def main():
     node = TextNode("This is a text node", TextType.BOLD, "https://www.boot.dev")
@@ -41,6 +42,23 @@ def extract_title(markdown):
         if line.startswith("# "):
             return line[2:].strip()
     raise Exception("Missing title")
+
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+    from_file = open(from_path, 'r')
+    f = from_file.read()
+    template_file = open(template_path, 'r')
+    t = template_file.read()    
+    markdown = markdown_to_html_node(f)
+    title = extract_title(markdown)
+    html = markdown.to_html()
+    t.replace(r"{{ Title }}", title)
+    t.replace(r"{{ Content }}", html.split("<\h1>", maxsplit=1)[1])
+    dest_file = open(dest_path, 'w')
+    dest_file.write(t)
+    dest_file.close()
+    template_file.close()
+    from_file.close()
 
 main()
 

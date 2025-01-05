@@ -1,13 +1,9 @@
 import os
 import shutil
 
-from textnode import TextNode, TextType
 from markdown_to_blocks import markdown_to_html_node
 
 def main():
-    node = TextNode("This is a text node", TextType.BOLD, "https://www.boot.dev")
-    print(node)
-
     def copy(source, destination):
         # delete all the contents of the destination directory
         if os.path.exists(destination):
@@ -36,6 +32,11 @@ def main():
     destination = root + "public"
     copy(source, destination)
 
+    from_path = "/home/robert_chandler/workspace/staticsitegenerator/content/index.md"
+    template_path = "/home/robert_chandler/workspace/staticsitegenerator/template.html"
+    dest_path = "/home/robert_chandler/workspace/staticsitegenerator/public/index.html"
+    generate_page(from_path, template_path, dest_path)
+
 def extract_title(markdown):
     markdown_lines = markdown.split("\n")
     for line in markdown_lines:
@@ -46,16 +47,15 @@ def extract_title(markdown):
 def generate_page(from_path, template_path, dest_path):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     from_file = open(from_path, 'r')
-    f = from_file.read()
-    template_file = open(template_path, 'r')
-    t = template_file.read()    
-    markdown = markdown_to_html_node(f)
+    markdown = from_file.read()
     title = extract_title(markdown)
-    html = markdown.to_html()
-    t.replace(r"{{ Title }}", title)
-    t.replace(r"{{ Content }}", html.split("<\h1>", maxsplit=1)[1])
+    template_file = open(template_path, 'r')
+    template = template_file.read()
+    html = markdown_to_html_node(markdown).to_html()
+    template = template.replace("{{ Title }}", title)
+    template = template.replace("{{ Content }}", html)
     dest_file = open(dest_path, 'w')
-    dest_file.write(t)
+    dest_file.write(template)
     dest_file.close()
     template_file.close()
     from_file.close()

@@ -32,10 +32,9 @@ def main():
     destination = root + "public"
     copy(source, destination)
 
-    from_path = "/home/robert_chandler/workspace/staticsitegenerator/content/index.md"
-    template_path = "/home/robert_chandler/workspace/staticsitegenerator/template.html"
-    dest_path = "/home/robert_chandler/workspace/staticsitegenerator/public/index.html"
-    generate_page(from_path, template_path, dest_path)
+    from_path = root + "content"
+    template_path = root + "/template.html"
+    generate_pages_recursive(from_path, template_path, destination)
 
 def extract_title(markdown):
     markdown_lines = markdown.split("\n")
@@ -59,6 +58,22 @@ def generate_page(from_path, template_path, dest_path):
     dest_file.close()
     template_file.close()
     from_file.close()
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    contents = os.listdir(dir_path_content)
+    print(f"contents: {contents}")
+    for file in contents:
+        print(f"file: {file}")
+        if "." in file:
+            if file.endswith(".md"):
+                source = f"{dir_path_content}/{file}"
+                generate_page(source, template_path, dest_dir_path)
+        else:
+            directory = f"{dest_dir_path}/{file}"
+            print(f"creating directory {directory}")
+            os.mkdir(directory)
+            rec_source = f"{dir_path_content}/{file}"
+            generate_pages_recursive(rec_source, template_path, directory)
 
 main()
 

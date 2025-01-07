@@ -33,7 +33,7 @@ def main():
     copy(source, destination)
 
     from_path = root + "content"
-    template_path = root + "/template.html"
+    template_path = root + "template.html"
     generate_pages_recursive(from_path, template_path, destination)
 
 def extract_title(markdown):
@@ -61,13 +61,15 @@ def generate_page(from_path, template_path, dest_path):
 
 def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
     contents = os.listdir(dir_path_content)
-    print(f"contents: {contents}")
     for file in contents:
-        print(f"file: {file}")
         if "." in file:
-            if file.endswith(".md"):
+            if file.endswith(".md"):                
                 source = f"{dir_path_content}/{file}"
-                generate_page(source, template_path, dest_dir_path)
+                file = file.replace(".md", ".html")
+                print(f"source: {source}")
+                print(f"template_path: {template_path}")
+                print(f"dest_dir_path/file: {dest_dir_path}/{file}")
+                generate_page(source, template_path, f"{dest_dir_path}/{file}")
         else:
             directory = f"{dest_dir_path}/{file}"
             print(f"creating directory {directory}")
